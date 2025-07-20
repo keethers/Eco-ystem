@@ -1,27 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import useAccess from '@/hooks/useAccess';
+// pages/VisitorAccessManager.jsx
+import { useState } from 'react';
 
 export default function VisitorAccessManager() {
-  const { getGuests, toggleAccess } = useAccess();
-  const [guests, setGuests] = useState([]);
+  const [name, setName] = useState('');
+  const [visitors, setVisitors] = useState([]);
+  const [accessCode, setAccessCode] = useState('');
 
-  useEffect(() => {
-    getGuests().then(setGuests);
-  }, []);
+  const grantAccess = () => {
+    if (name.trim()) {
+      const entry = {
+        name,
+        code: accessCode || Math.floor(100000 + Math.random() * 900000).toString(),
+        time: new Date().toLocaleTimeString()
+      };
+      setVisitors([entry, ...visitors]);
+      setName('');
+      setAccessCode('');
+    }
+  };
 
   return (
-    <div className="p-4 bg-slate-800 text-white rounded-xl">
-      <h1 className="text-xl font-bold mb-2">🔐 Visitor Access Manager</h1>
-      <ul className="text-sm space-y-2">
-        {guests.map((guest, i) => (
-          <li key={i} className="flex justify-between items-center">
-            👤 {guest.name}
-            <button
-              className="btn btn-xs bg-yellow-700"
-              onClick={() => toggleAccess(guest.id)}
-            >
-              {guest.allowed ? 'Revoke' : 'Grant'}
-            </button>
+    <div style={{ padding: 20 }}>
+      <h1>Visitor Access Manager</h1>
+      <input
+        placeholder="Visitor Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        style={{ marginBottom: 8, width: '100%' }}
+      />
+      <input
+        placeholder="Optional Access Code"
+        value={accessCode}
+        onChange={(e) => setAccessCode(e.target.value)}
+        style={{ marginBottom: 8, width: '100%' }}
+      />
+      <button onClick={grantAccess}>Grant Access</button>
+
+      <h2>Visitor Log</h2>
+      <ul>
+        {visitors.map((v, i) => (
+          <li key={i}>
+            {v.time} — <strong>{v.name}</strong> (Code: {v.code})
           </li>
         ))}
       </ul>

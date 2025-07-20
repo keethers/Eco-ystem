@@ -1,46 +1,33 @@
-// pages/VisitorAccessManager.jsx
+// pages/HivePurgeProtocol.jsx
 import { useState } from 'react';
 
-export default function VisitorAccessManager() {
-  const [name, setName] = useState('');
-  const [visitors, setVisitors] = useState([]);
-  const [accessCode, setAccessCode] = useState('');
+export default function HivePurgeProtocol() {
+  const [status, setStatus] = useState('Idle');
+  const [logs, setLogs] = useState([]);
 
-  const grantAccess = () => {
-    if (name.trim()) {
-      const entry = {
-        name,
-        code: accessCode || Math.floor(100000 + Math.random() * 900000).toString(),
-        time: new Date().toLocaleTimeString()
-      };
-      setVisitors([entry, ...visitors]);
-      setName('');
-      setAccessCode('');
-    }
+  const activatePurge = () => {
+    setStatus('⚠️ Purge Sequence Initiated');
+    const timestamp = new Date().toLocaleTimeString();
+    setLogs([{ time: timestamp, action: 'Hive Purge Started' }, ...logs]);
+
+    setTimeout(() => {
+      setStatus('✅ Hive Purge Completed');
+      const completeTime = new Date().toLocaleTimeString();
+      setLogs(prev => [{ time: completeTime, action: 'Hive Cleared' }, ...prev]);
+    }, 3000);
   };
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Visitor Access Manager</h1>
-      <input
-        placeholder="Visitor Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        style={{ marginBottom: 8, width: '100%' }}
-      />
-      <input
-        placeholder="Optional Access Code"
-        value={accessCode}
-        onChange={(e) => setAccessCode(e.target.value)}
-        style={{ marginBottom: 8, width: '100%' }}
-      />
-      <button onClick={grantAccess}>Grant Access</button>
+      <h1>Hive Purge Protocol</h1>
+      <p>Status: <strong>{status}</strong></p>
+      <button onClick={activatePurge}>Activate Purge</button>
 
-      <h2>Visitor Log</h2>
+      <h2>Purge Logs</h2>
       <ul>
-        {visitors.map((v, i) => (
-          <li key={i}>
-            {v.time} — <strong>{v.name}</strong> (Code: {v.code})
+        {logs.map((log, index) => (
+          <li key={index}>
+            [{log.time}] {log.action}
           </li>
         ))}
       </ul>

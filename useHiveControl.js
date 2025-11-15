@@ -10,3 +10,4 @@ export default function useHiveControl() {
 
   return { purgeHive };
 }
+(
